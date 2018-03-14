@@ -26,7 +26,7 @@ Syntax highlighted code block
 [Link](url) and ![Image](src)
 ```
 
-For more details see [MySQL Testing](https://github.com/galaxyglory/blog/blob/master/mysql/modify1.md).
+For more details see [MySQL Testing](https://github.com/galaxyglory/blog/blob/master/mysql/modify.md).
 
 ### Jekyll Themes
 
