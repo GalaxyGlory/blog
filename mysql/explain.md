@@ -1,4 +1,3 @@
-
 ###EXPLAIN使用JSON
 
 '''mysql> explain FORMAT = JSON select * from employees where emp_no = 23344;
