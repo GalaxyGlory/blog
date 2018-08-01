@@ -1,4 +1,4 @@
-# GalaxyGlory's Blog
+# **GalaxyGlory's Blog**  
 [**Linux's Blog**](https://github.com/galaxyglory/blog/tree/master/linux)
 1. linux
 2. shell
