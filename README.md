@@ -1,10 +1,10 @@
 # GalaxyGlory's Blog
-[Linux's Blog](https://github.com/galaxyglory/blog/tree/master/linux)
+[**Linux's Blog**](https://github.com/galaxyglory/blog/tree/master/linux)
 
-[MySQL's Blog](https://github.com/galaxyglory/blog/tree/master/mysql)
+[**MySQL's Blog**](https://github.com/galaxyglory/blog/tree/master/mysql)
 
-[NoSQL's Blog](https://github.com/galaxyglory/blog/tree/master/nosql)
+[**NoSQL's Blog**](https://github.com/galaxyglory/blog/tree/master/nosql)
 
-[Oracle's Blog](https://github.com/galaxyglory/blog/tree/master/oracle)
+[**Oracle's Blog**](https://github.com/galaxyglory/blog/tree/master/oracle)
 
-[Python's Blog](https://github.com/galaxyglory/blog/tree/master/python)
+[**Python's Blog**](https://github.com/galaxyglory/blog/tree/master/python)
