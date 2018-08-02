@@ -13,4 +13,4 @@
 
 [**Shell's Blog**](https://github.com/galaxyglory/shell)
 
-![个人技能图谱](pictures/学习技能.png)
+![个人技能图谱](pictures/学习技能2.png)
