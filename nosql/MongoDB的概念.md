@@ -33,15 +33,15 @@
   - 数据库拒绝服务时如何排查原因
   - 数据库磁盘快满时如何处理
 
-![1533194386109](C:\Users\galaxy\AppData\Local\Temp\1533194386109.png)
+![1533194386109](https://github.com/galaxyglory/blog/tree/master/nosql/MongoDB/Pictures/1533194386109.png)
 
-![1533194494382](C:\Users\galaxy\AppData\Local\Temp\1533194494382.png)
+![1533194494382](https://github.com/galaxyglory/blog/tree/master/nosql/MongoDB/Pictures/1533194494382.png)
 
-![1533194534504](C:\Users\galaxy\AppData\Local\Temp\1533194534504.png)
+![1533194534504](https://github.com/galaxyglory/blog/tree/master/nosql/MongoDB/Pictures/1533194534504.png)
 
-![1533194555229](C:\Users\galaxy\AppData\Local\Temp\1533194555229.png)
+![1533194555229](https://github.com/galaxyglory/blog/tree/master/nosql/MongoDB/Pictures/1533194555229.png)
 
-![1533194572682](C:\Users\galaxy\AppData\Local\Temp\1533194572682.png)
+![1533194572682](https://github.com/galaxyglory/blog/tree/master/nosql/MongoDB/Pictures/1533194572682.png)
 
 ```
 mongo 127.0.0.1:27017/test
