@@ -12,3 +12,5 @@
 [**Python's Blog**](https://github.com/galaxyglory/blog/tree/master/python)
 
 [**Shell's Blog**](https://github.com/galaxyglory/shell)
+
+![个人技能图谱](pictures/学习技能.png)
