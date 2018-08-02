@@ -12,4 +12,3 @@
 [**Python's Blog**](https://github.com/galaxyglory/blog/tree/master/python)
 
 [**Shell's Blog**](https://github.com/galaxyglory/shell)
-
