@@ -732,8 +732,8 @@ SELECT OWNER,OBJECT_NAME, OBJECT_ID, OBJECT_TYPE,to_char(CREATED,'yyyy-mm-dd,hh2
 to_char(LAST_DDL_TIME,'yyyy-mm-dd,hh24:mi:ss') LAST_DDL_TIME,STATUS
 FROM  dba_objects where status<>'VALID' and owner='SYS' order by last_ddl_time;
 ```
-How to Diagnose Invalid or Missing Data Dictionary (SYS) Objects (文档 ID 554520.1)
-Debug and Validate Invalid Objects (文档 ID 300056.1)
+[^参考文章]: How to Diagnose Invalid or Missing Data Dictionary (SYS) Objects (文档 ID 554520.1)
+[^参考文章]: Debug and Validate Invalid Objects (文档 ID 300056.1)
 ### 占用空间最多的10个object
 ```plsql
 col owner format a15
