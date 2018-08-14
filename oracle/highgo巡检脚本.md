@@ -1,6 +1,7 @@
 # HighGo巡检脚本
 [TOC]
 ## 1.1 Oracle实例运行时间
+```plsql
 col running format a30
 select to_char(startup_time, 'DD-MON-YYYY HH24:MI:SS') starttime,
 TRUNC(sysdate - (startup_time)) || 'days' ||
@@ -13,8 +14,10 @@ MOD(TRUNC(86400 *
 ((SYSDATE - STARTUP_TIME) - TRUNC(SYSDATE - startup_time))),
 60) || 's' running
 from v$instance;
+```
 ## 1.2  查看cursors
 **查询session_cached_cursors和 open_cursors 的使用率(每个实例)**
+```plsql
 select 'session_cached_cursors' parameter,
 lpad(value, 5) value,
 decode(value, 0, ' n/a', to_char(100 * used / value, '990') || '%') usage
@@ -33,6 +36,7 @@ where n.name in ('opened cursors current')
 and s.statistic# = n.statistic#
 group by s.sid),
 (select value from v$parameter where name = 'open_cursors');
+```
 ## 2.1 操作系统版本/架构
 ### 2.1.1 查看定时任务
 **Linux**
@@ -341,16 +345,19 @@ ps aux
 3. 如果还是担心，可以检查一下当前的RBAL进程内存消耗，没有发现异常增长就OK，因为问题触发只在MOUNT DG时，如果当时触发了就可能出现RBAL内存持续增长，如果当时没发生后面也不会再发生。
 ## 3.7 检查共享vg模式
 ## 3.8 检查ASM磁盘组空间
+```plsql
 Set pagesize 100
 Set linesize 180
 Col name format a15
 select GROUP_NUMBER,NAME,STATE,TYPE,TOTAL_MB,FREE_MB,USABLE_FILE_MB from v$asm_diskgroup;
+
 set pagesize 200
 set linesize 150
 col path format a20;
 col group_name format a10
 col name format a20
 select a.group_number,b.name as group_name,a.name,a.path,a.state,a.total_mb from v$asm_disk a,v$asm_diskgroup b where a.group_number=b.group_number;
+```
 lsvg
 ## 3.9 检查监听日志及alert日志文件大小
 **Windows**
@@ -408,6 +415,7 @@ $ORA_CRS_HOME/OPatch/opatch lsinventory  -oh $ORA_CRS_HOME
 ./opatch lsinventory -oh $ORACLE_CRS_HOME                               //10g
 ./opatch lsinventory -oh $ORACLE_HOME                      //10g
 **补丁安装情况2**
+```plsql
 set pages 100 lines 120
 set echo on
 col action format a6
@@ -418,21 +426,26 @@ col action_time format a30
 col bundle_series format a15
 alter session set nls_timestamp_format = 'yyyy-mm-dd hh24:mi:ss.ff';
 select * from dba_registry_history;
+```
 ## 5.2 数据库基本配置信息
 **数据库基本信息**
+```plsql
 alter session set NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS';
 col PLATFORM_NAME format a30
 select dbid,name,platform_name,created, log_mode  from v$database;
+```
 **查看数据库强制日志、最小补充日志、闪回功能开启情况**
+```plsql
 col FLASHBACK_ON format a2
 col platform_name format a10
 col name format a9
 alter session set NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS';
 select dbid,name,platform_name,created,log_mode,force_logging,supplemental_log_data_fk,supplemental_log_data_all,supplemental_log_data_min,flashback_on  from v$database;
-
 select supplemental_log_data_min from gv$database;
+```
 ---alter database add supplemental log data;
 **查看数据库当前session连接数，以及曾经达到最高的连接个数**
+```plsql
 select inst_id, sessions_current,sessions_highwater from  gv$license;
 
 Set pagesize 1000
@@ -440,11 +453,15 @@ set linesize 100
 column name format a30
 column value format a40
 select inst_id,name,value from gv$parameter where value is not null;
+```
 **非默认参数**
+```plsql
 Col name for a20
 Col value for a40
 select num,name,value FROM V$PARAMETER where isdefault='FALSE';
+```
 **隐藏参数**
+```plsql
 set linesize 200
 column name format a50
 column value format a25
@@ -462,6 +479,7 @@ x.indx = y.indx and
 x.ksppinm LIKE '/_%' escape '/'
 order by
 translate(x.ksppinm, ' _', ' ');
+```
 **查看参数**
 show parameter audit_trail
 show parameter max_dump_file_size
@@ -489,12 +507,17 @@ col RESOURCE_NAME format a25
 col LIMIT format a15
 select * from dba_profiles;
 **数据库字符集**
+```plsql
 select userenv('language') from dual;
 select * from NLS_DATABASE_PARAMETERS;
+```
 **数据库实例状态**
+```plsql
 col host_name  format a20
 select inst_id,instance_number,instance_name,host_name,status from gv$instance;
+```
 ## 5.3 数据库产品选项
+```plsql
 Set pagesize 100
 Set linesize 100
 set linesize 150
@@ -503,20 +526,24 @@ column value format a20
 select *  from v$option where value='TRUE';
 col COMP_NAME format a35;
 select comp_id,comp_name, status, substr(version,1,10) as version  from dba_registry;
+```
 ## 5.4 数据量大小
 **查看数据库段空间统计**
 select sum(bytes)/1024/1024/1024 as gb from  Dba_Segments;
 ## 5.5 控制文件
 **控制文件**
+```plsql
 Set linesize 200
 Col name format a55
 Select * from v$controlfile;
+```
 **生成控制文件**
 alter session set tracefile_identifier='bak_control';
 alter database backup controlfile to trace;
 或
 alter database backup controlfile to '/home/oracle/controlfile20171229.bak';
 ## 5.6 redo log文件
+```plsql
 col status format a10;
 select thread#, GROUP#,SEQUENCE#,BYTES/1024/1024,STATUS,FIRST_TIME from v$log;
 
@@ -530,15 +557,19 @@ select group#,status,type,IS_RECOVERY_DEST_FILE,member from v$logfile;
 
 col status format a10;
 select inst_id,thread#, GROUP#,SEQUENCE#,BYTES/1024/1024,STATUS,FIRST_TIME from gv$log;
+```
 ## 5.7 归档情况
+```plsql
 archive log list;
 select log_mode from v$database;
 
 col name format a20
 col value  format a40
 select inst_id,name,value from gv$parameter where name ='log_archive_dest_1';
+```
 ## 5.8 表空间使用情况
 **查看表空间使用信息**
+```plsql
 set linesize 150
 set pagesize 400
 column file_name format a65
@@ -551,7 +582,9 @@ from (select tablespace_name,sum(bytes) sumbytes from dba_free_space group by ta
 (select tablespace_name,sum(bytes) sumbytes from dba_data_files group by tablespace_name) d
 where f.tablespace_name= d.tablespace_name
 order by used_percent desc;
+```
 **查看表空间自动扩展情况下的使用信息**
+```plsql
 set linesize 150 pagesize 500
 select f.tablespace_name tablespace_name,
 round((d.sumbytes/1024/1024/1024),2) total_without_extend_GB,
@@ -579,7 +612,9 @@ col path format a20;
 col group_name format a10
 col name format a20
 select a.group_number,b.name as group_name,a.name,a.path,a.state,a.total_mb from v$asm_disk a,v$asm_diskgroup b where a.group_number=b.group_number;
+```
 **相关数据文件（可扩展性）**
+```plsql
 Set pagesize 300
 Set linesize 300
 col file_name format a60
@@ -587,10 +622,12 @@ select file_id,tablespace_name,file_name,bytes/1024/1024,status,autoextensible,m
 
 col file_name format a60
 select file_id, file_name,tablespace_name,bytes/1024/1024 as MB ,autoextensible,maxbytes,user_bytes,online_status from dba_data_files;
+```
 **查看数据库是否存在数据库文件处于需要还原状态**
 select * from v$recover_file;
 ## 5.9 临时表空间及账户状态
 **用户使用临时表空间情况**
+```plsql
 column username format a25
 column account_status format a20
 col default_tablespace format a20
@@ -602,7 +639,9 @@ col account_status format a20;
 col default_tablespace format a19;
 col temporary_tablespace format a10;
 select username,account_status,default_tablespace,temporary_tablespace,CREATED from dba_users order by account_status,created;
+```
 ### 临时表空间使用
+```plsql
 SELECT d.tablespace_name "Name",
 TO_CHAR(NVL(a.bytes / 1024 / 1024, 0),'99,999,990.900') "Size (M)",
 TO_CHAR(NVL(t.hwm, 0)/1024/1024,'99999999.999')  "HWM (M)",
@@ -616,13 +655,17 @@ WHERE d.tablespace_name = a.tablespace_name(+)
 AND d.tablespace_name = t.tablespace_name(+)
 AND d.extent_management like 'LOCAL'
 AND d.contents like 'TEMPORARY';
+```
 ### 临时数据文件大小
+```plsql
 Set pagesize 100
 Set linesize 200
 col file_name format a55
 select tablespace_name,file_name,bytes/1024/1024,autoextensible,maxbytes/1024/1024 from dba_temp_files;
+```
 ## 5.10 SCHEMA使用情况
 **每个schema使用情况**
+```plsql
 select owner, count(*),sum(bytes)/1024/1024/1024 as GB from dba_segments group by owner order by GB desc;
 
 col name format a10
@@ -630,8 +673,10 @@ col value format a10
 select sessions_current,sessions_highwater from  gv$license;
 
 select name,value from v$parameter where name='processes';
+```
 ## 5.11  RMAN 备份情况
 **查看数据库是否存在备份实效情况**
+```plsql
 col INPUT_BYTES_PER_SEC_DISPLAY format a15;
 col OUTPUT_BYTES_PER_SEC_DISPLAY format a15;
 col TIME_TAKEN_DISPLAY format a17;
@@ -658,6 +703,7 @@ rman target /
 list backup of database ;
 list backup of archivelog all;
 show all;
+```
 [^注]: 若是备份信息存储在control file中,并且rman的保留策略是天数；需要根据control_file_record_keep_time的参数值,进一步评估control_file_record_keep_time参数值的合理性。
 ## 5.12  CRS 日志报错情况
 ## 5.13  RDBMS 日志报错情况
@@ -665,6 +711,7 @@ show all;
 tail -1000
 ## 5.14  数据库中无效对象情况
 ### ALL
+```plsql
 set linesize 500
 col owner format a15
 col object_name format a30
@@ -673,7 +720,9 @@ col object_type format a10
 SELECT OWNER,OBJECT_NAME, OBJECT_ID, OBJECT_TYPE,to_char(CREATED,'yyyy-mm-dd,hh24:mi:ss') CREATED,
 to_char(LAST_DDL_TIME,'yyyy-mm-dd,hh24:mi:ss') LAST_DDL_TIME,STATUS
 FROM  dba_objects where status<>'VALID' order by owner,object_name,OBJECT_TYPE;
+```
 ### 非SYS
+```plsql
 set linesize 200
 col owner format a15
 col object_name format a30
@@ -682,9 +731,11 @@ col object_type format a10
 SELECT OWNER,OBJECT_NAME, OBJECT_ID, OBJECT_TYPE,to_char(CREATED,'yyyy-mm-dd,hh24:mi:ss') CREATED,
 to_char(LAST_DDL_TIME,'yyyy-mm-dd,hh24:mi:ss') LAST_DDL_TIME,STATUS
 FROM  dba_objects where status<>'VALID' and owner='SYS' order by last_ddl_time;
+```
 How to Diagnose Invalid or Missing Data Dictionary (SYS) Objects (文档 ID 554520.1)
 Debug and Validate Invalid Objects (文档 ID 300056.1)
 ### 占用空间最多的10个object
+```plsql
 col owner format a15
 col Segment_Name format a36
 col segment_type format a15
@@ -692,7 +743,9 @@ col tablespace_name format a15
 select owner, Segment_Name,segment_type,tablespace_name,MB from
 (Select owner, Segment_Name,segment_type,tablespace_name,Sum(bytes)/1024/1024 as MB From dba_Extents  group by owner,Segment_Name,segment_type,tablespace_name order by MB desc)
 where rownum < 11;
+```
 ## 5.15  数据库scn headroom问题检查
+```plsql
 Rem
 Rem $Header: rdbms/admin/scnhealthcheck.sql st_server_tbhukya_bug-13498243/8 2012/01/17 03:37:18 tbhukya Exp $
 Rem
@@ -818,12 +871,16 @@ dbms_output.put_line( '-----------------------------------------------------'
 END LOOP;
 end;
 /
+```
 ## 5.16 数据库当前的等待事件
 select inst_id,event,count(1) from gv$session where wait_class#<> 6 group by inst_id,event order by 1,3;
 ## 5.17 客户端连接分布
+```plsql
 col MACHINE format a20
 select inst_id,machine ,count(*) from gv$session group by machine,inst_id order by 3;
+```
 ## 5.18  检查15天内归档的生成情况
+```plsql
 set numwindth 3
 或
 set numw 3
@@ -860,19 +917,25 @@ Order by 1;
 set numw 10
 或
 set numwindth 10
+```
 ## 5.19 目前数据库中未删除的归档总大小
 select  ((sum(blocks * block_size)) /1024 /1024) as "MB" from gv$archived_log where  STANDBY_DEST  ='NO'  and deleted='NO';
 ## 5.20 数据库所有实例每天生成的归档大小
+```plsql
 select
 trunc(completion_time) as "Date"
 ,count(*) as "Count"
 ,((sum(blocks * block_size)) /1024 /1024) as "MB"
 from gv$archived_log where  STANDBY_DEST  ='NO'
 group by trunc(completion_time) order by trunc(completion_time) ;
+```
 ## 5.21  检查数据库中DBA权限的用户
+```plsql
 set pagesize 400
 select * from dba_role_privs where granted_role='DBA';
+```
 ## 5.22   数据库中DBLINK的创建信息
+```plsql
 SELECT 'CREATE '||DECODE(U.NAME,'PUBLIC','public ')||'DATABASE LINK '||CHR(10)
 ||DECODE(U.NAME,'PUBLIC',Null, 'SYS','',U.NAME||'.')|| L.NAME||chr(10)
 ||'CONNECT TO ' || L.USERID || ' IDENTIFIED BY "'||L.PASSWORD||'" USING
@@ -880,10 +943,12 @@ SELECT 'CREATE '||DECODE(U.NAME,'PUBLIC','public ')||'DATABASE LINK '||CHR(10)
 ||chr(10)||';' TEXT
 FROM SYS.LINK$ L, SYS.USER$ U
 WHERE L.OWNER# = U.USER#;
+```
 ## 5.23   检查object_id的最大值
 select max(object_id) from dba_objects;
 ## 5.24   入侵检查
 如果查询出信息输出则表示已经被恶意程序植入了比特币勒索触发器，需要尽快处理。该问题主要是通过使用互联网上非正规渠道获得的plsqldevloper工具连接数据库时传播感染。
+```plsql
 select 'DROP TRIGGER '||owner||'."'||TRIGGER_NAME||'";' from dba_triggers where
 TRIGGER_NAME like 'DBMS_%_INTERNAL% '
 union all
@@ -891,32 +956,46 @@ select 'DROP PROCEDURE '||owner||'."'||a.object_name||'";' from dba_procedures a
 where a.object_name like 'DBMS_%_INTERNAL% ';
 
 select owner,object_name,created from dba_objects where object_name like 'DBMS_SUPPORT_DBMONITOR%';
+```
 ## 5.25 Unusable Index(es) 
+```plsql
 select t.owner,t.index_name,t.table_name,blevel,t.num_rows,t.leaf_blocks,t.distinct_keys  from dba_indexes t
 where status = 'UNUSABLE'
 and  table_owner not in ('ORDDATA','ORDSYS','DMSYS','APEX_030200','OUTLN','DBSNMP','SYSTEM','SYSMAN','SYS','CTXSYS','MDSYS','OLAPSYS','WMSYS','EXFSYS','LBACSYS','WKSYS','XDB')
 and owner in (select username from dba_users where account_status='OPEN');
+```
 ## 5.26 Index(es) of blevel>=3
+```plsql
 col INDEX_NAME for a30
 SELECT owner,index_name,blevel FROM dba_indexes WHERE blevel >= 3 ORDER BY blevel DESC;
+```
 ## 5.27 Other Index Type
+```plsql
 select t.owner,t.table_name,t.index_name,t.index_type,t.status,t.blevel,t.leaf_blocks from dba_indexes t
 where index_type in ('BITMAP', 'FUNCTION-BASED NORMAL', 'NORMAL/REV')
 and owner not in ('ORDDATA','ORDSYS','DMSYS','APEX_030200','OUTLN','DBSNMP','SYSTEM','SYSMAN','SYS','CTXSYS','MDSYS','OLAPSYS','WMSYS','EXFSYS','LBACSYS','WKSYS','XDB','ORDSYS','DBSNMP','OUTLN','TSMSYS') and owner in (select username from dba_users where account_status='OPEN');
+```
 ## 5.28 Any Business data in system tablespace 
+```plsql
 select * from (select owner, segment_name, segment_type,tablespace_name
   from dba_segments where tablespace_name in('SYSTEM','SYSAUX'))
 where  owner not in ('MTSSYS','ORDDATA','ORDSYS','DMSYS','APEX_030200','OUTLN','DBSNMP','SYSTEM','SYSMAN','SYS','CTXSYS','MDSYS','OLAPSYS','WMSYS','EXFSYS','LBACSYS','WKSYS','XDB','ORDSYS','DBSNMP','OUTLN','TSMSYS') and owner in (select username from dba_users where account_status='OPEN');
+```
 ## 5.29 Table(s) of degree
 select owner,table_name name,status,degree from dba_tables where degree>1;
 ## 5.30 Index(es) of degree 
 select owner,index_name name,status,degree from dba_indexes where degree>'1';
 ## 5.31 Disabled Trigger(es)
+```plsql
 SELECT owner, trigger_name, table_name, status FROM dba_triggers WHERE status = 'DISABLED' and owner in (select username from dba_users where account_status='OPEN');
+```
 ## 5.32 Disabled Constraint(s) 
+```plsql
 SELECT owner, constraint_name, table_name, constraint_type, status 
 FROM dba_constraints WHERE status ='DISABLE' and constraint_type='P' and owner in (select username from dba_users where account_status='OPEN');
+```
 ## 5.33  Foreign Key no index
+```plsql
 select c.owner,d.table_name,d.CONSTRAINT_NAME,d.columns from DBA_CONS_COLUMNS c,
 (SELECT TABLE_NAME,
        CONSTRAINT_NAME,
@@ -953,21 +1032,29 @@ select c.owner,d.table_name,d.CONSTRAINT_NAME,d.columns from DBA_CONS_COLUMNS c,
            AND I.COLUMN_POSITION <= CONS.COL_CNT
 GROUP BY I.INDEX_NAME)) d where c.constraint_name=d.CONSTRAINT_NAME and c.table_name=d.TABLE_NAME
 and c.owner in(select username from dba_users where account_status='OPEN' and username not in ('SYS','SYSTEM','SYSMAN','DBSNMP')) order by c.owner;
+```
 ## 6.1 数据库保护模式
+```plsql
 select DB_UNIQUE_NAME,DATABASE_ROLE DB_ROLE,FORCE_LOGGING F_LOG,FLASHBACK_ON FLASHB_ON,LOG_MODE,OPEN_MODE,
 GUARD_STATUS GUARD,PROTECTION_MODE PROT_MODE
 from v$database;
 
 select DEST_ID, APPLIED_SCN FROM v$archive_dest WHERE TARGET='STANDBY';
+```
 **查看备库状态**
+```plsql
 select DB_UNIQUE_NAME,DATABASE_ROLE DB_ROLE,FORCE_LOGGING F_LOG,FLASHBACK_ON FLASHB_ON,LOG_MODE,OPEN_MODE,
 GUARD_STATUS GUARD,PROTECTION_MODE PROT_MODE
 from v$database;
+```
 ## 6.2 备库同步状态
 **主端查询**
+```plsql
 select max(sequence#),thread# from varchived_log where RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM VDATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#;
 archive log list;
+```
 **备端查询**
+```plsql
 select max(sequence#),thread# from varchived_log where  applied='YES' and RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM VDATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#;
 
 SELECT PROCESS,STATUS,THREAD#,SEQUENCE#,BLOCK#,BLOCKS,DELAY_MINS FROM V$MANAGED_STANDBY;
@@ -979,12 +1066,15 @@ select sequence#,applied from v$archived_log;
 select max(sequence#),applied,thread# from v$archived_log group by applied,thread# order by thread#;
 
 archive log list;
+```
 [^注]: 如果主备相差3个以内可以接受，如果相差较多则表示同步异常。
 **同步状态**
+```plsql
 col name for a30
 set linesize 500
 col  value for a50
 select name,value  from v$dataguard_stats;
+```
 **检查是否存在断档**
 select * from v$archive_gap;
 ## 7.1 AWR、ASH
