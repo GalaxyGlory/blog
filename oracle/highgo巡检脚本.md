@@ -1050,19 +1050,18 @@ from v$database;
 ## 6.2 备库同步状态
 **主端查询**
 ```plsql
-select max(sequence#),thread# from varchived_log where RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM VDATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#;
+select max(sequence#),thread# from v$archived_log where RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM V$DATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#;
+
 archive log list;
 ```
 **备端查询**
 ```plsql
-select max(sequence#),thread# from varchived_log where  applied='YES' and RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM VDATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#;
+select max(sequence#),thread# from v$archived_log where  applied='YES' and RESETLOGS_CHANGE# = (SELECT RESETLOGS_CHANGE# FROM V$DATABASE_INCARNATION WHERE STATUS = 'CURRENT') GROUP BY THREAD#; 
 
 SELECT PROCESS,STATUS,THREAD#,SEQUENCE#,BLOCK#,BLOCKS,DELAY_MINS FROM V$MANAGED_STANDBY;
 
 select DB_UNIQUE_NAME,SWITCHOVER_STATUS,CURRENT_SCN from v$database;
-
 select sequence#,applied from v$archived_log;
-
 select max(sequence#),applied,thread# from v$archived_log group by applied,thread# order by thread#;
 
 archive log list;
