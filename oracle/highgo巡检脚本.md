@@ -1081,6 +1081,7 @@ select * from v$archive_gap;
 @?/rdbms/admin/addmrpt.sql
 @?/rdbms/admin/awrrpt.sql
 @?/rdbms/admin/ashrpt.sql
+
 ## 7.2 参数文件备份
 create pfile='C:\Users\Administrator\Desktop\pfile20170109.ora' from spfile;
 create pfile='/home/oracle/pfile20180806.ora' from spfile;
