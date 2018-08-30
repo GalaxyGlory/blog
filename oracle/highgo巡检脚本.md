@@ -1067,7 +1067,20 @@ select max(sequence#),applied,thread# from v$archived_log group by applied,threa
 archive log list;
 ```
 [^注]: 如果主备相差3个以内可以接受，如果相差较多则表示同步异常。
+**切换归档日志**
+
+ALTER DATABASE RECOVER MANAGED STANDBY DATABASE CANCEL;
+
+ALTER DATABASE OPEN READ ONLY;
+
+RECOVER MANAGED STANDBY DATABASE DISCONNECT USING CURRENT LOGFILE;
+
+ALTER SYSTEM SWITCH LOGFILE ；
+
+ALTER SYSTEM ARCHIVE LOG CURRENT；
+
 **同步状态**
+
 ```plsql
 col name for a30
 set linesize 500
